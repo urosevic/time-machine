@@ -37,7 +37,7 @@
 defined( 'ABSPATH' ) || exit;
 
 define( 'TIME_MACHINE_VERSION', '26.8.0' );
-define( 'TIME_MACHINE_DB_VERSION', 1 );
+define( 'TIME_MACHINE_DB_VERSION', 2 );
 define( 'TIME_MACHINE_FILE', __FILE__ );
 define( 'TIME_MACHINE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TIME_MACHINE_URL', plugin_dir_url( __FILE__ ) );

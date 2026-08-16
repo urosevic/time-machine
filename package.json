@@ -10,9 +10,12 @@
 		"start": "wp-scripts start blocks/time-machine/src/index.js --output-path=blocks/time-machine/build --webpack-copy-php",
 		"prestart": "node -e \"require('fs').mkdirSync('blocks/time-machine/build',{recursive:true});require('fs').copyFileSync('blocks/time-machine/src/block.json','blocks/time-machine/build/block.json')\"",
 		"lint:js": "wp-scripts lint-js",
-		"lint:css": "wp-scripts lint-style"
+		"lint:css": "wp-scripts lint-style",
+		"build:css": "sass assets/scss/time-machine.scss:assets/css/time-machine.css --style=expanded --no-source-map",
+		"watch:css": "sass --watch assets/scss/time-machine.scss:assets/css/time-machine.css --no-source-map"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^34.1.0"
+		"@wordpress/scripts": "^34.1.0",
+		"sass": "^1.102.0"
 	}
 }

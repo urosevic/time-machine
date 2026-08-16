@@ -1,0 +1,67 @@
+/**
+ * Front-end styles for the Time Machine post list.
+ *
+ * Shared by the widget, the shortcode and the block render output, all of
+ * which share the same markup produced by Content_Generator::get_item_html().
+ */
+
+.time-machine-title {
+	cursor: help;
+
+	font-weight: 500;
+}
+
+.time-machine-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	font-size: 1em;
+}
+
+.time-machine-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: 0.5em;
+	row-gap: 0.25em;
+	padding: 0.5em 0;
+
+	&:not( :last-child ) {
+		border-bottom: 1px solid #eee;
+	}
+}
+
+.time-machine-item__date {
+	font-weight: 400;
+
+	&::after {
+		content: ":";
+	}
+}
+
+.time-machine-item__title {
+	flex: 1 1 0;
+	min-width: 0;
+	overflow-wrap: break-word;
+}
+
+.time-machine-item__comments {
+	font-size: 0.85em;
+	// color: #666;
+	cursor: help;
+
+	&::before {
+		content: "(";
+	}
+
+	&::after {
+		content: ")";
+	}
+}
+
+.time-machine-item__excerpt {
+	flex-basis: 100%;
+	font-size: 0.9em;
+	// color: #444;
+}

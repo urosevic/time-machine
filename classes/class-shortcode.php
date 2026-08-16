@@ -63,8 +63,6 @@ class Shortcode {
 				'excerpt'            => self::bool_to_string( $defaults['excerpt'] ),
 				'excerpt_cut'        => self::bool_to_string( $defaults['excerpt_cut'] ),
 				'excerpt_length'     => $defaults['excerpt_length'],
-				'excerpt_before'     => $defaults['excerpt_before'],
-				'excerpt_after'      => $defaults['excerpt_after'],
 			),
 			$atts,
 			self::TAG
@@ -85,8 +83,6 @@ class Shortcode {
 			'excerpt'            => self::string_to_bool( $atts['excerpt'] ),
 			'excerpt_cut'        => self::string_to_bool( $atts['excerpt_cut'] ),
 			'excerpt_length'     => absint( $atts['excerpt_length'] ),
-			'excerpt_before'     => wp_kses_post( $atts['excerpt_before'] ),
-			'excerpt_after'      => wp_kses_post( $atts['excerpt_after'] ),
 		);
 
 		$generator = new Content_Generator( $settings );

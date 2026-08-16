@@ -80,8 +80,6 @@ class Block {
 			'excerpt'            => ! empty( $attributes['excerpt'] ),
 			'excerpt_cut'        => ! empty( $attributes['excerptCut'] ),
 			'excerpt_length'     => absint( $attributes['excerptLength'] ),
-			'excerpt_before'     => wp_kses_post( $attributes['excerptBefore'] ),
-			'excerpt_after'      => wp_kses_post( $attributes['excerptAfter'] ),
 		);
 
 		$generator = new Content_Generator( $settings );

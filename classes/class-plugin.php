@@ -61,6 +61,7 @@ class Plugin {
 		add_action( 'init', array( $this, 'register_shortcode' ) );
 		add_action( 'init', array( $this, 'register_block' ) );
 		add_action( 'plugins_loaded', array( $this, 'maybe_update' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 	}
 
 	/**
@@ -100,6 +101,63 @@ class Plugin {
 	}
 
 	/**
+	 * Register the front-end stylesheet and enqueue it only on requests
+	 * where it is actually going to be used.
+	 *
+	 * This only covers the widget and the shortcode. The block ships and
+	 * loads its own copy of the same rules (see
+	 * blocks/time-machine/src/style.scss, pulled in via block.json's
+	 * `style` field), because that is the mechanism WordPress uses to also
+	 * load styles inside the post editor's iframe for ServerSideRender
+	 * previews - a plain `wp_enqueue_style()` call here only ever reaches
+	 * the parent admin document, never the iframe.
+	 *
+	 * The stylesheet is registered unconditionally (cheap, no output) and
+	 * only enqueued when a Time Machine widget or shortcode is actually
+	 * present, which has to be checked here on `wp_enqueue_scripts` since
+	 * that is the last point before `wp_head` where styles reliably print.
+	 *
+	 * @return void
+	 */
+	public function enqueue_styles() {
+
+		wp_register_style(
+			'time-machine',
+			TIME_MACHINE_URL . 'assets/css/time-machine.css',
+			array(),
+			TIME_MACHINE_VERSION
+		);
+
+		if ( self::current_request_needs_styles() ) {
+			wp_enqueue_style( 'time-machine' );
+		}
+	}
+
+	/**
+	 * Whether the current request is expected to render a Time Machine
+	 * widget or shortcode, and therefore needs the stylesheet.
+	 *
+	 * @return bool
+	 */
+	private static function current_request_needs_styles() {
+
+		if ( is_active_widget( false, false, 'time-machine', true ) ) {
+			return true;
+		}
+
+		if ( is_singular() ) {
+
+			$post = get_post();
+
+			if ( $post instanceof \WP_Post && has_shortcode( $post->post_content, Shortcode::TAG ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get default widget settings, merged with the legacy `time_machine` option.
 	 *
 	 * @return array
@@ -121,8 +179,6 @@ class Plugin {
 			'excerpt'            => false,
 			'excerpt_cut'        => false,
 			'excerpt_length'     => 150,
-			'excerpt_before'     => '<br /><small><em>',
-			'excerpt_after'      => '</em></small>',
 		);
 
 		$options = wp_parse_args( get_option( 'time_machine' ), $defaults );

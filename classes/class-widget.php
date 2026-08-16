@@ -108,8 +108,6 @@ class Widget extends \WP_Widget {
 
 		$excerpt        = ! empty( $instance['excerpt'] ) ? $instance['excerpt'] : '';
 		$excerpt_cut    = ! empty( $instance['excerpt_cut'] ) ? $instance['excerpt_cut'] : '';
-		$excerpt_before = ! empty( $instance['excerpt_before'] ) ? $instance['excerpt_before'] : $this->defaults['excerpt_before'];
-		$excerpt_after  = ! empty( $instance['excerpt_after'] ) ? $instance['excerpt_after'] : $this->defaults['excerpt_after'];
 		$excerpt_length = ! empty( $instance['excerpt_length'] ) ? absint( $instance['excerpt_length'] ) : absint( $this->defaults['excerpt_length'] );
 
 		?>
@@ -183,34 +181,6 @@ class Widget extends \WP_Widget {
 			<?php esc_html_e( 'Show article excerpt?', 'time-machine' ); ?></label>
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'excerpt_before' ) ); ?>">
-			<?php
-			echo wp_kses_post(
-				sprintf(
-					/* translators: %s: Example HTML markup shown as a hint. */
-					__( 'Content in front of excerpt (eg. %s)', 'time-machine' ),
-					'<code>&lt;br/&gt;&lt;em&gt;</code>'
-				)
-			);
-			?>
-			:</label>
-			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'excerpt_before' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excerpt_before' ) ); ?>" type="text" value="<?php echo esc_attr( $excerpt_before ); ?>">
-		</p>
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'excerpt_after' ) ); ?>">
-			<?php
-			echo wp_kses_post(
-				sprintf(
-					/* translators: %s: Example HTML markup shown as a hint. */
-					__( 'Content after excerpt (eg. %s)', 'time-machine' ),
-					'<code>&lt;/em&gt;</code>'
-				)
-			);
-			?>
-			:</label>
-			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'excerpt_after' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excerpt_after' ) ); ?>" type="text" value="<?php echo esc_attr( $excerpt_after ); ?>">
-		</p>
-		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'excerpt_cut' ) ); ?>">
 			<input class="checkbox" <?php checked( $excerpt_cut, true, true ); ?> id="<?php echo esc_attr( $this->get_field_id( 'excerpt_cut' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excerpt_cut' ) ); ?>" type="checkbox" value="1">
 			<?php esc_html_e( 'Shorten article excerpt', 'time-machine' ); ?></label><br />
@@ -255,8 +225,6 @@ class Widget extends \WP_Widget {
 		$instance['excerpt']        = ! empty( $new_instance['excerpt'] );
 		$instance['excerpt_cut']    = ! empty( $new_instance['excerpt_cut'] );
 		$instance['excerpt_length'] = ! empty( $new_instance['excerpt_length'] ) ? absint( $new_instance['excerpt_length'] ) : $this->defaults['excerpt_length'];
-		$instance['excerpt_before'] = ! empty( $new_instance['excerpt_before'] ) ? wp_kses_post( $new_instance['excerpt_before'] ) : '';
-		$instance['excerpt_after']  = ! empty( $new_instance['excerpt_after'] ) ? wp_kses_post( $new_instance['excerpt_after'] ) : '';
 
 		return $instance;
 	}

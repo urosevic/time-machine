@@ -1,14 +1,19 @@
+/**
+ * List and title styling live in assets/scss/time-machine.scss and is
+ * pulled in here via @use, instead of being duplicated, so the widget,
+ * shortcode and block all share one source of truth.
+ *
+ * This has to happen at the webpack/block build level, not through a plain
+ * PHP enqueue: the block preview in the editor (ServerSideRender) renders
+ * inside the post editor's iframe, and assets enqueued on
+ * `enqueue_block_editor_assets` load into the parent admin document, not
+ * into that iframe. Styles registered through block.json's `style` field
+ * are the ones WordPress actually loads inside the iframe, so that is
+ * where the shared styles need to end up.
+ */
+@use '../../../assets/scss/time-machine';
+
 .wp-block-time-machine-time-machine {
-	ul {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.time-machine-title {
-		font-weight: 600;
-	}
-
 	.components-spinner {
 		margin: 1em auto;
 	}

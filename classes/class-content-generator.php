@@ -32,7 +32,7 @@ class Content_Generator {
 	 *                     same keys as the widget instance array: title, message,
 	 *                     posts, showifno, private, exclude_pages, exclude_current,
 	 *                     display_commentnum, range, offset, direction, excerpt,
-	 *                     excerpt_cut, excerpt_length, excerpt_before, excerpt_after.
+	 *                     excerpt_cut, excerpt_length.
 	 */
 	public function __construct( array $args = array() ) {
 		$this->args = wp_parse_args( $args, Plugin::get_defaults() );
@@ -230,7 +230,7 @@ class Content_Generator {
 			$posts = $this->get_articles();
 		}
 
-		$html = '<ul>';
+		$html = '<ul class="time-machine-list">';
 
 		if ( empty( $posts ) ) {
 
@@ -263,21 +263,21 @@ class Content_Generator {
 		// Convert the GMT date used for querying into the site's configured timezone for display.
 		$post_date_local = ( new \DateTimeImmutable( $post_row->post_date_gmt, new \DateTimeZone( 'UTC' ) ) )->setTimezone( $timezone );
 
-		$html  = '<li>';
-		$html .= '<span class="meta-date">' . esc_html( $post_date_local->format( 'Y' ) ) . '</span>: ';
-		$html .= '<a href="' . esc_url( get_permalink( $post_row->ID ) ) . '" rel="nofollow" title="' . esc_attr__( 'Published at', 'time-machine' ) . ' ' . esc_attr( $post_date_local->format( 'Y-m-d H:i:s' ) ) . '" class="article-title">' . esc_html( $post_row->post_title ) . '</a>';
+		$html  = '<li class="time-machine-item">';
+		$html .= '<time class="time-machine-item__date" datetime="' . esc_attr( $post_date_local->format( 'c' ) ) . '">' . esc_html( $post_date_local->format( 'Y' ) ) . '</time>';
+		$html .= '<a href="' . esc_url( get_permalink( $post_row->ID ) ) . '" rel="nofollow" title="' . esc_attr__( 'Published at', 'time-machine' ) . ' ' . esc_attr( $post_date_local->format( 'Y-m-d H:i:s' ) ) . '" class="time-machine-item__title">' . esc_html( $post_row->post_title ) . '</a>';
 
 		// What about comments?
 		if ( $this->args['display_commentnum'] ) {
-			$html .= ' (<span title="' . esc_attr__( 'Number of comments', 'time-machine' ) . '">';
+			$html .= '<span class="time-machine-item__comments" title="' . esc_attr__( 'Number of comments', 'time-machine' ) . '">';
 			$html .= esc_html( $post_row->comment_count );
-			$html .= '</span>)';
+			$html .= '</span>';
 		}
 
 		// Do we need excerpt?
 		if ( $this->args['excerpt'] && ! empty( $post_row->post_excerpt ) ) {
 
-			$html .= wp_kses_post( $this->args['excerpt_before'] );
+			$html .= '<span class="time-machine-item__excerpt">';
 
 			if ( $this->args['excerpt_length'] && mb_strlen( $post_row->post_excerpt ) > ( $this->args['excerpt_length'] + 1 ) ) {
 				$html .= esc_html( self::substr_utf8( $post_row->post_excerpt, 0, $this->args['excerpt_length'] ) ) . '&hellip;';
@@ -285,7 +285,7 @@ class Content_Generator {
 				$html .= esc_html( $post_row->post_excerpt );
 			}
 
-			$html .= wp_kses_post( $this->args['excerpt_after'] );
+			$html .= '</span>';
 		}
 
 		$html .= '</li>';

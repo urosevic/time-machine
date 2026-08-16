@@ -80,6 +80,51 @@ class Updater {
 	}
 
 	/**
+	 * DB update #2: drop the `excerpt_before` and `excerpt_after` widget
+	 * settings. The excerpt is now always wrapped in a `<span class="excerpt">`
+	 * by Content_Generator, so it can be styled through CSS instead.
+	 *
+	 * @return void
+	 */
+	private static function update_2() {
+		self::remove_widget_setting( 'excerpt_before' );
+		self::remove_widget_setting( 'excerpt_after' );
+	}
+
+	/**
+	 * Remove a setting key from all saved Time Machine widget instances.
+	 *
+	 * @param string $key Setting key to remove.
+	 *
+	 * @return void
+	 */
+	private static function remove_widget_setting( $key ) {
+
+		$widget_instances = get_option( self::WIDGET_OPTION_NAME );
+
+		if ( empty( $widget_instances ) || ! is_array( $widget_instances ) ) {
+			return;
+		}
+
+		$updated = false;
+
+		foreach ( $widget_instances as $instance_key => $instance ) {
+
+			if ( ! is_array( $instance ) || ! array_key_exists( $key, $instance ) ) {
+				continue;
+			}
+
+			unset( $widget_instances[ $instance_key ][ $key ] );
+
+			$updated = true;
+		}
+
+		if ( $updated ) {
+			update_option( self::WIDGET_OPTION_NAME, $widget_instances );
+		}
+	}
+
+	/**
 	 * Rename a setting key in all saved Time Machine widget instances.
 	 *
 	 * Carries the existing value across to the new key (unless already

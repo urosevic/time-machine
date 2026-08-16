@@ -40,8 +40,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		excerpt,
 		excerptCut,
 		excerptLength,
-		excerptBefore,
-		excerptAfter,
 	} = attributes;
 
 	const blockProps = useBlockProps();
@@ -134,18 +132,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Show article excerpt', 'time-machine' ) }
 						checked={ excerpt }
 						onChange={ ( value ) => setAttributes( { excerpt: value } ) }
-					/>
-					<TextControl
-						label={ __( 'Content in front of excerpt', 'time-machine' ) }
-						value={ excerptBefore }
-						onChange={ ( value ) => setAttributes( { excerptBefore: value } ) }
-						disabled={ ! excerpt }
-					/>
-					<TextControl
-						label={ __( 'Content after excerpt', 'time-machine' ) }
-						value={ excerptAfter }
-						onChange={ ( value ) => setAttributes( { excerptAfter: value } ) }
-						disabled={ ! excerpt }
 					/>
 					<ToggleControl
 						label={ __( 'Shorten article excerpt', 'time-machine' ) }
