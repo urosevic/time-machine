@@ -1,0 +1,69 @@
+# translation of tm-sr_RS.po to Serbian
+# Aleksandar Urošević <urke@users.sourceforge.net>, 2009.
+msgid ""
+msgstr ""
+"Project-Id-Version: BY\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-12 22:45+0200\n"
+"PO-Revision-Date: 2009-07-14 18:17+0100\n"
+"Last-Translator: Aleksandar Urošević <urke@users.sourceforge.net>\n"
+"Language-Team: Marcis Gasuns <zhr@tut.by>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: KBabel 1.11.4\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIAN FEDERATION\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: ../time-machine.php:75
+msgid "Default value is"
+msgstr "Стандартное значение"
+
+#: ../time-machine.php:82
+msgid "Display number of comments"
+msgstr "Отображать количество комментариев"
+
+#: ../time-machine.php:81
+msgid "Exclude current year articles"
+msgstr "Исключить статьи этого года"
+
+#: ../time-machine.php:80
+msgid "Exclude pages from listing"
+msgstr "Исключить страницы из списка "
+
+#: ../time-machine.php:79
+msgid "Include password protected posts in listing?"
+msgstr "Включить защиту паролем постов  в списке?"
+
+#: ../time-machine.php:76
+msgid "Message when no posts in past"
+msgstr "Сообщение при отсутствии постов в прошлом"
+
+#: ../time-machine.php:45
+msgid "No entry on current day in past"
+msgstr "Нет входа на текущий день в прошлом"
+
+#: ../time-machine.php:129
+msgid "Number of comments"
+msgstr "Количество комментариев"
+
+#: ../time-machine.php:73
+msgid "Number of posts"
+msgstr "Количество постов"
+
+#: ../time-machine.php:78
+msgid "Show widget if no posts"
+msgstr "Показывать виджет, если нет постов"
+
+#: ../time-machine.php:31
+#: ../time-machine.php:32
+#: ../time-machine.php:44
+msgid "Time Machine"
+msgstr "Машина времени"
+
+#: ../time-machine.php:71
+msgid "Title"
+msgstr "Заголовок"
+

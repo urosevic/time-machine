@@ -1,0 +1,151 @@
+# translation of tm-sr_RS.po to Serbian
+# Aleksandar Urošević <urke@users.sourceforge.net>, 2009.
+msgid ""
+msgstr ""
+"Project-Id-Version: tm-sr_RS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-17 08:47+0200\n"
+"PO-Revision-Date: 2009-07-17 08:47+0100\n"
+"Last-Translator: Aleksandar Urošević <urke@users.sourceforge.net>\n"
+"Language-Team: Serbian <gnom@prevod.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: KBabel 1.11.4\n"
+
+#: ../time-machine.php:102
+msgid "After [+]"
+msgstr "после датума [+]"
+
+#: ../time-machine.php:100
+msgid "Before [-]"
+msgstr "пре датума [-]"
+
+#: ../time-machine.php:101
+msgid "Both [+/-]"
+msgstr "од пре до после датума [+/-]"
+
+#: ../time-machine.php:95
+msgid "Days"
+msgstr "дана"
+
+#: ../time-machine.php:82
+msgid "Default value is"
+msgstr "Подразумевана вредност је"
+
+#: ../time-machine.php:93
+msgid "Disable offset"
+msgstr "искључи раздобље"
+
+#: ../time-machine.php:89
+msgid "Display number of comments"
+msgstr "Прикажи број коментара"
+
+#: ../time-machine.php:88
+msgid "Exclude current year articles"
+msgstr "Занемари овогодишње чланке"
+
+#: ../time-machine.php:87
+msgid "Exclude pages from listing"
+msgstr "Занемари Вордпрес стране"
+
+#: ../time-machine.php:94
+msgid "Hours"
+msgstr "сати"
+
+#: ../time-machine.php:86
+msgid "Include password protected posts in listing?"
+msgstr "Укључи заштићене чланке"
+
+#: ../time-machine.php:83
+msgid "Message when no posts in past"
+msgstr "Порука када нема чланака"
+
+#: ../time-machine.php:97
+msgid "Months"
+msgstr "месеци"
+
+#: ../time-machine.php:45
+msgid "No entry on current day in past"
+msgstr "... раније ништа нисам писао :("
+
+#: ../time-machine.php:219
+msgid "Number of comments"
+msgstr "Број коментара"
+
+#: ../time-machine.php:92
+msgid "Number of hours/days/weeks/months to make time range before and/or after today date in past years"
+msgstr "Број сати, дана, недеља или месеци за који ће се направити раздобље пре и/или после данашњег датума претходних година"
+
+#: ../time-machine.php:80
+msgid "Number of posts"
+msgstr "Број чланака за приказ"
+
+#: ../time-machine.php:91
+msgid "Offset"
+msgstr "Раздобље"
+
+#: ../time-machine.php:220
+msgid "Published at"
+msgstr "Објављено дана"
+
+#: ../time-machine.php:99
+msgid "Range type"
+msgstr "Период раздобља"
+
+#: ../time-machine.php:85
+msgid "Show widget if no posts"
+msgstr "Прикажи празан виџет"
+
+#: ../time-machine.php:31
+#: ../time-machine.php:32
+#: ../time-machine.php:44
+msgid "Time Machine"
+msgstr "На данашњи дан"
+
+#: ../time-machine.php:78
+msgid "Title"
+msgstr "Наслов"
+
+#: ../time-machine.php:96
+msgid "Weeks"
+msgstr "недеља"
+
+#: ../time-machine.php:182
+msgid "after"
+msgstr "после"
+
+#: ../time-machine.php:179
+msgid "before"
+msgstr "пре"
+
+#: ../time-machine.php:185
+msgid "before and after"
+msgstr "пре и после"
+
+#: ../time-machine.php:167
+msgid "days"
+msgstr "дана"
+
+#: ../time-machine.php:164
+msgid "hours"
+msgstr "сати"
+
+#: ../time-machine.php:173
+msgid "months"
+msgstr "месеци"
+
+#: ../time-machine.php:188
+msgid "today's day in past years"
+msgstr "данашњег датума протеклих година"
+
+#: ../time-machine.php:170
+msgid "weeks"
+msgstr "недеља"
+
+#~ msgid "None"
+#~ msgstr "без раздобља"
+#~ msgid "Number for offset (-/+):"
+#~ msgstr "Раздобље (+/-):"
+
