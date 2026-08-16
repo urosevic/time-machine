@@ -12,8 +12,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class Plugin
  *
- * Bootstraps the plugin, exposes default widget settings, and registers
- * the Time Machine widget.
+ * Bootstraps the plugin, exposes default settings, and registers the
+ * widget, the shortcode and the block.
  */
 class Plugin {
 
@@ -59,6 +59,7 @@ class Plugin {
 
 		add_action( 'widgets_init', array( $this, 'register_widget' ) );
 		add_action( 'init', array( $this, 'register_shortcode' ) );
+		add_action( 'init', array( $this, 'register_block' ) );
 		add_action( 'plugins_loaded', array( $this, 'maybe_update' ) );
 	}
 
@@ -78,6 +79,15 @@ class Plugin {
 	 */
 	public function register_shortcode() {
 		Shortcode::register();
+	}
+
+	/**
+	 * Register the `time-machine/time-machine` block.
+	 *
+	 * @return void
+	 */
+	public function register_block() {
+		Block::register();
 	}
 
 	/**

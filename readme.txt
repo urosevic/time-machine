@@ -1,17 +1,20 @@
 === Time Machine ===
 Contributors: urkekg, techwebux
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Q6Q762MQ97XJ6
-Tags: widget, posts, archive, time, past, timezone, ago, relative, date, years, months, days, hours, minutes, seconds
-Requires at least: 3.9
-Tested up to: 4.1
-Stable tag: 0.4.1
+Tags: archive, history, on this day, widget, block
+Requires at least: 5.3
+Tested up to: 7.1
+Stable tag: 26.8.0
+Requires PHP: 7.4
+License: GPLv3
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Time Machine widget list articles published in past, relative to current date for specified offset of time, including all years of blogging (Ok, at least since 2002)
+Time Machine widget and block display a list of articles published in on this day in past, including offset in days, weeks and months.
 
 == Description ==
 
-Time Machine is a simple plugin that grab `N` published articles from database (posts and/or pages) published on current day and/or offset of time in past years, and list them in widget.
-User can set widget title, number of displayed articles and message printed when there is no public articles on current day or offset of time in past.
+Time Machine is a simple plugin that grab `N` published articles from database (posts and/or pages) published on current day and/or offset of time in past years, and list them in widget or block.
+User can set widget title, number of displayed articles and message shown when there is no public articles in past.
 
 = Features =
 * list only published articles (ignore Draft's)
@@ -48,6 +51,13 @@ I like effect that produce Time Machine - traveling trough time. This plugin doe
 Post suggestions, injoy in WordPress forum and donate.
 
 == Changelog ==
+
+= 26.8.0 (2026-08-16) =
+* Refactor: Full plugin refactored
+* Add: Support for Block Editor
+* Change: Removes `hours` offset
+* Change: Rename rangetype -> direction and rangenum -> offset
+* Test: WordPress 7.1-RC3
 
 = 0.4.1 (2014-12-20) =
 * Improve: multi instance widget

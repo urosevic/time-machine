@@ -1,0 +1,18 @@
+{
+	"name": "time-machine",
+	"version": "26.8.0",
+	"description": "Build tooling for the Time Machine block.",
+	"private": true,
+	"license": "GPL-3.0-or-later",
+	"scripts": {
+		"build": "wp-scripts build blocks/time-machine/src/index.js --output-path=blocks/time-machine/build --webpack-copy-php",
+		"postbuild": "node -e \"require('fs').copyFileSync('blocks/time-machine/src/block.json','blocks/time-machine/build/block.json')\"",
+		"start": "wp-scripts start blocks/time-machine/src/index.js --output-path=blocks/time-machine/build --webpack-copy-php",
+		"prestart": "node -e \"require('fs').mkdirSync('blocks/time-machine/build',{recursive:true});require('fs').copyFileSync('blocks/time-machine/src/block.json','blocks/time-machine/build/block.json')\"",
+		"lint:js": "wp-scripts lint-js",
+		"lint:css": "wp-scripts lint-style"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^34.1.0"
+	}
+}
