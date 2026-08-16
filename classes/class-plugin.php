@@ -18,18 +18,25 @@ defined( 'ABSPATH' ) || exit;
 class Plugin {
 
 	/**
+	 * Allowed values for the `range` setting (widget instance / shortcode attribute).
+	 *
+	 * @var string[]
+	 */
+	const ALLOWED_RANGES = array( 'none', 'days', 'weeks', 'months' );
+
+	/**
+	 * Allowed values for the `direction` setting (widget instance / shortcode attribute).
+	 *
+	 * @var string[]
+	 */
+	const ALLOWED_DIRECTIONS = array( 'before', 'after', 'both' );
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var Plugin|null
 	 */
 	private static $instance = null;
-
-	/**
-	 * Default settings, merged with the legacy `time_machine` option.
-	 *
-	 * @var array
-	 */
-	private $defaults = array();
 
 	/**
 	 * Get the singleton instance, creating it on first call.
@@ -50,9 +57,9 @@ class Plugin {
 	 */
 	private function __construct() {
 
-		$this->defaults = self::get_defaults();
-
 		add_action( 'widgets_init', array( $this, 'register_widget' ) );
+		add_action( 'init', array( $this, 'register_shortcode' ) );
+		add_action( 'plugins_loaded', array( $this, 'maybe_update' ) );
 	}
 
 	/**
@@ -62,6 +69,24 @@ class Plugin {
 	 */
 	public function register_widget() {
 		register_widget( __NAMESPACE__ . '\\Widget' );
+	}
+
+	/**
+	 * Register the `[time_machine]` shortcode.
+	 *
+	 * @return void
+	 */
+	public function register_shortcode() {
+		Shortcode::register();
+	}
+
+	/**
+	 * Run any pending data migrations for existing installs.
+	 *
+	 * @return void
+	 */
+	public function maybe_update() {
+		Updater::maybe_update();
 	}
 
 	/**
@@ -81,8 +106,8 @@ class Plugin {
 			'exclude_current'    => false,
 			'display_commentnum' => false,
 			'range'              => 'none',
-			'rangenum'           => '1',
-			'rangetype'          => 'both',
+			'offset'             => '1',
+			'direction'          => 'both',
 			'excerpt'            => false,
 			'excerpt_cut'        => false,
 			'excerpt_length'     => 150,

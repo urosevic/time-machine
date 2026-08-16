@@ -31,7 +31,7 @@ class Content_Generator {
 	 * @param array $args Settings, merged over the plugin defaults. Accepts the
 	 *                     same keys as the widget instance array: title, message,
 	 *                     posts, showifno, private, exclude_pages, exclude_current,
-	 *                     display_commentnum, range, rangenum, rangetype, excerpt,
+	 *                     display_commentnum, range, offset, direction, excerpt,
 	 *                     excerpt_cut, excerpt_length, excerpt_before, excerpt_after.
 	 */
 	public function __construct( array $args = array() ) {
@@ -112,15 +112,15 @@ class Content_Generator {
 				$date_base = $now->setDate( $year, (int) $now->format( 'm' ), (int) $now->format( 'd' ) );
 
 				// Define theoretical before and after date range.
-				$date_before = $date_base->modify( '-' . $this->args['rangenum'] . ' ' . $this->args['range'] )->format( 'Y-m-d H:i:s' );
-				$date_after  = $date_base->modify( '+' . $this->args['rangenum'] . ' ' . $this->args['range'] )->format( 'Y-m-d H:i:s' );
+				$date_before = $date_base->modify( '-' . $this->args['offset'] . ' ' . $this->args['range'] )->format( 'Y-m-d H:i:s' );
+				$date_after  = $date_base->modify( '+' . $this->args['offset'] . ' ' . $this->args['range'] )->format( 'Y-m-d H:i:s' );
 
 				// Decide requested before and after date range.
-				if ( 'before' === $this->args['rangetype'] ) {
+				if ( 'before' === $this->args['direction'] ) {
 					// Range only before.
 					$date_start = $date_before;
 					$date_end   = $date_base->format( 'Y-m-d H:i:s' );
-				} elseif ( 'after' === $this->args['rangetype'] ) {
+				} elseif ( 'after' === $this->args['direction'] ) {
 					// Range only after.
 					$date_start = $date_base->format( 'Y-m-d H:i:s' );
 					$date_end   = $date_after;
@@ -180,7 +180,7 @@ class Content_Generator {
 		}
 
 		$prefix  = '<span style="cursor:help" title="';
-		$prefix .= esc_attr__( 'Articles published', 'time-machine' ) . ' ' . $this->args['rangenum'] . ' ';
+		$prefix .= esc_attr__( 'Articles published', 'time-machine' ) . ' ' . $this->args['offset'] . ' ';
 
 		switch ( $this->args['range'] ) {
 			case 'days':
@@ -196,7 +196,7 @@ class Content_Generator {
 
 		$prefix .= ' ';
 
-		switch ( $this->args['rangetype'] ) {
+		switch ( $this->args['direction'] ) {
 			case 'before':
 				$prefix .= esc_attr__( 'before', 'time-machine' );
 				break;

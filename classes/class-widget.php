@@ -102,10 +102,9 @@ class Widget extends \WP_Widget {
 		$exclude_current    = ! empty( $instance['exclude_current'] ) ? $instance['exclude_current'] : '';
 		$display_commentnum = ! empty( $instance['display_commentnum'] ) ? $instance['display_commentnum'] : '';
 
-		$allowed_ranges = array( 'none', 'days', 'weeks', 'months' );
-		$range          = ! empty( $instance['range'] ) && in_array( $instance['range'], $allowed_ranges, true ) ? $instance['range'] : $this->defaults['range'];
-		$rangenum       = ! empty( $instance['rangenum'] ) ? absint( $instance['rangenum'] ) : absint( $this->defaults['rangenum'] );
-		$rangetype      = ! empty( $instance['rangetype'] ) ? $instance['rangetype'] : $this->defaults['rangetype'];
+		$range     = ! empty( $instance['range'] ) && in_array( $instance['range'], Plugin::ALLOWED_RANGES, true ) ? $instance['range'] : $this->defaults['range'];
+		$offset    = ! empty( $instance['offset'] ) ? absint( $instance['offset'] ) : absint( $this->defaults['offset'] );
+		$direction = ! empty( $instance['direction'] ) && in_array( $instance['direction'], Plugin::ALLOWED_DIRECTIONS, true ) ? $instance['direction'] : $this->defaults['direction'];
 
 		$excerpt        = ! empty( $instance['excerpt'] ) ? $instance['excerpt'] : '';
 		$excerpt_cut    = ! empty( $instance['excerpt_cut'] ) ? $instance['excerpt_cut'] : '';
@@ -154,8 +153,8 @@ class Widget extends \WP_Widget {
 		<h3><?php esc_html_e( 'Time range', 'time-machine' ); ?></h3>
 
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'rangenum' ) ); ?>"><?php esc_html_e( 'Offset', 'time-machine' ); ?>:</label>
-			<input class="small-text" id="<?php echo esc_attr( $this->get_field_id( 'rangenum' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'rangenum' ) ); ?>" type="number" value="<?php echo esc_attr( $rangenum ); ?>">
+			<label for="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>"><?php esc_html_e( 'Offset', 'time-machine' ); ?>:</label>
+			<input class="small-text" id="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'offset' ) ); ?>" type="number" value="<?php echo esc_attr( $offset ); ?>">
 		</p>
 
 		<p>
@@ -169,11 +168,11 @@ class Widget extends \WP_Widget {
 		</p>
 
 		<p>
-		<label for="<?php echo esc_attr( $this->get_field_id( 'rangetype' ) ); ?>"><?php esc_html_e( 'Range type', 'time-machine' ); ?>:</label>
-		<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'rangetype' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'rangetype' ) ); ?>">
-			<option value="before" <?php selected( $rangetype, 'before' ); ?>><?php esc_html_e( 'Before [-]', 'time-machine' ); ?></option>
-			<option value="both" <?php selected( $rangetype, 'both' ); ?>><?php esc_html_e( 'Both [+/-]', 'time-machine' ); ?></option>
-			<option value="after" <?php selected( $rangetype, 'after' ); ?>><?php esc_html_e( 'After [+]', 'time-machine' ); ?></option>
+		<label for="<?php echo esc_attr( $this->get_field_id( 'direction' ) ); ?>"><?php esc_html_e( 'Direction', 'time-machine' ); ?>:</label>
+		<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'direction' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'direction' ) ); ?>">
+			<option value="before" <?php selected( $direction, 'before' ); ?>><?php esc_html_e( 'Before [-]', 'time-machine' ); ?></option>
+			<option value="both" <?php selected( $direction, 'both' ); ?>><?php esc_html_e( 'Both [+/-]', 'time-machine' ); ?></option>
+			<option value="after" <?php selected( $direction, 'after' ); ?>><?php esc_html_e( 'After [+]', 'time-machine' ); ?></option>
 		</select>
 		</p>
 
@@ -246,12 +245,12 @@ class Widget extends \WP_Widget {
 		$instance['exclude_current']    = ! empty( $new_instance['exclude_current'] );
 		$instance['display_commentnum'] = ! empty( $new_instance['display_commentnum'] );
 
-		$allowed_ranges  = array( 'none', 'days', 'weeks', 'months' );
-		$submitted_range = ! empty( $new_instance['range'] ) ? wp_strip_all_tags( $new_instance['range'] ) : $this->defaults['range'];
+		$submitted_range     = ! empty( $new_instance['range'] ) ? wp_strip_all_tags( $new_instance['range'] ) : $this->defaults['range'];
+		$submitted_direction = ! empty( $new_instance['direction'] ) ? wp_strip_all_tags( $new_instance['direction'] ) : $this->defaults['direction'];
 
-		$instance['range']     = in_array( $submitted_range, $allowed_ranges, true ) ? $submitted_range : $this->defaults['range'];
-		$instance['rangenum']  = ! empty( $new_instance['rangenum'] ) ? absint( $new_instance['rangenum'] ) : $this->defaults['rangenum'];
-		$instance['rangetype'] = ! empty( $new_instance['rangetype'] ) ? wp_strip_all_tags( $new_instance['rangetype'] ) : $this->defaults['rangetype'];
+		$instance['range']     = in_array( $submitted_range, Plugin::ALLOWED_RANGES, true ) ? $submitted_range : $this->defaults['range'];
+		$instance['offset']    = ! empty( $new_instance['offset'] ) ? absint( $new_instance['offset'] ) : $this->defaults['offset'];
+		$instance['direction'] = in_array( $submitted_direction, Plugin::ALLOWED_DIRECTIONS, true ) ? $submitted_direction : $this->defaults['direction'];
 
 		$instance['excerpt']        = ! empty( $new_instance['excerpt'] );
 		$instance['excerpt_cut']    = ! empty( $new_instance['excerpt_cut'] );
