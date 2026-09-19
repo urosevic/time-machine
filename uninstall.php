@@ -26,16 +26,25 @@ if ( 'time-machine/time-machine.php' !== WP_UNINSTALL_PLUGIN ) {
 }
 
 // Set option names.
-$time_machine_settings_option_name   = 'time_machine';
-$time_machine_widget_option_name     = 'widget_time-machine';
-$time_machine_db_version_option_name = 'time_machine_db_version';
+$time_machine_settings_option_name    = 'time_machine';
+$time_machine_widget_option_name      = 'widget_time-machine';
+$time_machine_db_version_option_name  = 'time_machine_db_version';
+$time_machine_rest_health_option_name = 'time_machine_rest_health';
 
 // Delete plugin settings option.
 delete_option( $time_machine_settings_option_name );
 delete_option( $time_machine_widget_option_name );
 delete_option( $time_machine_db_version_option_name );
+delete_option( $time_machine_rest_health_option_name );
 
 // Delete plugin settings options in multisite.
 delete_site_option( $time_machine_settings_option_name );
 delete_site_option( $time_machine_widget_option_name );
 delete_site_option( $time_machine_db_version_option_name );
+delete_site_option( $time_machine_rest_health_option_name );
+
+// Drop the daily REST reachability probe and the per-user dismissals of
+// the admin notice it can raise.
+wp_clear_scheduled_hook( 'time_machine_rest_health_check' );
+delete_transient( 'time_machine_rest_health_lock' );
+delete_metadata( 'user', 0, 'time_machine_rest_health_dismissed', '', true );

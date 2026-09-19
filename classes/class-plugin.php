@@ -65,6 +65,7 @@ class Plugin {
 
 		Rest_Controller::register();
 		Refresh::register();
+		Rest_Health::register();
 
 		// Invalidate the Time Machine cache whenever a post or page is
 		// saved (created, edited, trashed/untrashed, or published on schedule).

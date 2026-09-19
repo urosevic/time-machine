@@ -47,3 +47,7 @@ require_once TIME_MACHINE_DIR . 'classes/class-autoloader.php';
 \TechWebUX\TimeMachine\Autoloader::register();
 
 \TechWebUX\TimeMachine\Plugin::instance();
+
+// Drop the daily REST reachability probe when the plugin is switched off,
+// so a deactivated plugin leaves nothing behind on the cron schedule.
+register_deactivation_hook( __FILE__, array( '\TechWebUX\TimeMachine\Rest_Health', 'unschedule' ) );
