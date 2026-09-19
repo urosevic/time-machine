@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Time Machine
- * Plugin URI: https://urosevic.net/wordpress/plugins/time-machine/
+ * Plugin URI: https://devyard.urosevic.net/plugins/time-machine/
  * Description: Widget to list articles published in past, relative to current date by specified time offset.
  * Version: 26.8.0
  * Author: Aleksandar Urošević
