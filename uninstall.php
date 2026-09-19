@@ -26,13 +26,16 @@ if ( 'time-machine/time-machine.php' !== WP_UNINSTALL_PLUGIN ) {
 }
 
 // Set option names.
-$time_machine_settings_option_name = 'time_machine';
-$time_machine_widget_option_name   = 'widget_time-machine';
+$time_machine_settings_option_name   = 'time_machine';
+$time_machine_widget_option_name     = 'widget_time-machine';
+$time_machine_db_version_option_name = 'time_machine_db_version';
 
 // Delete plugin settings option.
 delete_option( $time_machine_settings_option_name );
 delete_option( $time_machine_widget_option_name );
+delete_option( $time_machine_db_version_option_name );
 
 // Delete plugin settings options in multisite.
 delete_site_option( $time_machine_settings_option_name );
 delete_site_option( $time_machine_widget_option_name );
+delete_site_option( $time_machine_db_version_option_name );

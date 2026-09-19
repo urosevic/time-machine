@@ -1,6 +1,6 @@
 {
 	"name": "time-machine",
-	"version": "26.8.0",
+	"version": "26.9.0",
 	"description": "Build tooling for the Time Machine block.",
 	"private": true,
 	"license": "GPL-3.0-or-later",

@@ -3,7 +3,7 @@
  * Plugin Name: Time Machine
  * Plugin URI: https://devyard.urosevic.net/plugins/time-machine/
  * Description: Widget to list articles published in past, relative to current date by specified time offset.
- * Version: 26.8.0
+ * Version: 26.9.0
  * Author: Aleksandar Urošević
  * Author URI: https://urosevic.net/
  * License: GPLv3
@@ -36,8 +36,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'TIME_MACHINE_VERSION', '26.8.0' );
-define( 'TIME_MACHINE_DB_VERSION', 2 );
+define( 'TIME_MACHINE_VERSION', '26.9.0' );
+define( 'TIME_MACHINE_DB_VERSION', 3 );
 define( 'TIME_MACHINE_FILE', __FILE__ );
 define( 'TIME_MACHINE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TIME_MACHINE_URL', plugin_dir_url( __FILE__ ) );

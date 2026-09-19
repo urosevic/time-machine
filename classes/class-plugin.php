@@ -62,6 +62,14 @@ class Plugin {
 		add_action( 'init', array( $this, 'register_block' ) );
 		add_action( 'plugins_loaded', array( $this, 'maybe_update' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+
+		Rest_Controller::register();
+		Refresh::register();
+
+		// Invalidate the Time Machine cache whenever a post or page is
+		// saved (created, edited, trashed/untrashed, or published on schedule).
+		add_action( 'save_post_post', array( __NAMESPACE__ . '\\Cache', 'maybe_flush' ) );
+		add_action( 'save_post_page', array( __NAMESPACE__ . '\\Cache', 'maybe_flush' ) );
 	}
 
 	/**

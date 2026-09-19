@@ -92,6 +92,49 @@ class Updater {
 	}
 
 	/**
+	 * DB update #3: switch the `excerpt_length` widget setting from a
+	 * character count to a word count, now that Content_Generator trims
+	 * excerpts with wp_trim_words() instead of a manual character cut.
+	 *
+	 * Also converts the same setting in the legacy `time_machine` option, in
+	 * case an install still carries one from before per-widget settings
+	 * existed - it is otherwise no longer written to by the current UI.
+	 *
+	 * @return void
+	 */
+	private static function update_3() {
+
+		self::transform_widget_value( 'excerpt_length', array( __CLASS__, 'characters_to_words' ) );
+
+		$legacy_settings = get_option( 'time_machine' );
+
+		if ( is_array( $legacy_settings ) && array_key_exists( 'excerpt_length', $legacy_settings ) ) {
+			$legacy_settings['excerpt_length'] = self::characters_to_words( $legacy_settings['excerpt_length'] );
+			update_option( 'time_machine', $legacy_settings );
+		}
+	}
+
+	/**
+	 * Approximate a character count as a word count.
+	 *
+	 * There is no way to recover the exact word count an old `excerpt_length`
+	 * characters value used to cut off at - only the stored number, not the
+	 * actual post content it used to apply to, survives to run this
+	 * migration. Average English word length is around 4.7 characters;
+	 * adding the trailing space between words puts a typical running word at
+	 * roughly 6 characters, the same rule of thumb typing speed (WPM) tests
+	 * use. Dividing by 6 turns the old setting into a comparable word count,
+	 * rounded to the nearest word and floored at 1.
+	 *
+	 * @param int $characters Previous excerpt_length value, in characters.
+	 *
+	 * @return int Equivalent excerpt_length value, in words.
+	 */
+	private static function characters_to_words( $characters ) {
+		return max( 1, (int) round( absint( $characters ) / 6 ) );
+	}
+
+	/**
 	 * Remove a setting key from all saved Time Machine widget instances.
 	 *
 	 * @param string $key Setting key to remove.
@@ -196,6 +239,40 @@ class Updater {
 			}
 
 			$widget_instances[ $instance_key ][ $key ] = $new_value;
+			$updated                                   = true;
+		}
+
+		if ( $updated ) {
+			update_option( self::WIDGET_OPTION_NAME, $widget_instances );
+		}
+	}
+
+	/**
+	 * Recalculate a setting's stored value, across all saved Time Machine
+	 * widget instances, through a callback.
+	 *
+	 * @param string   $key      Setting key to recalculate.
+	 * @param callable $callback Receives the current value, returns the new one.
+	 *
+	 * @return void
+	 */
+	private static function transform_widget_value( $key, callable $callback ) {
+
+		$widget_instances = get_option( self::WIDGET_OPTION_NAME );
+
+		if ( empty( $widget_instances ) || ! is_array( $widget_instances ) ) {
+			return;
+		}
+
+		$updated = false;
+
+		foreach ( $widget_instances as $instance_key => $instance ) {
+
+			if ( ! is_array( $instance ) || ! array_key_exists( $key, $instance ) ) {
+				continue;
+			}
+
+			$widget_instances[ $instance_key ][ $key ] = call_user_func( $callback, $instance[ $key ] );
 			$updated                                   = true;
 		}
 
