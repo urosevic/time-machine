@@ -97,7 +97,7 @@ class Block {
 
 			$title_wrap = $generator->get_title_wrap();
 
-			$html .= '<div class="time-machine-title">';
+			$html .= '<div class="time-machine-title widget-title">';
 			$html .= $title_wrap['prefix'];
 			$html .= esc_html( $settings['title'] );
 			$html .= $title_wrap['suffix'];

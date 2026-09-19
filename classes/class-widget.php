@@ -117,12 +117,12 @@ class Widget extends \WP_Widget {
 		</p>
 
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>"><?php esc_html_e( 'Message when no articles in past', 'time-machine' ); ?>:</label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>"><?php esc_html_e( 'Message if no articles in past', 'time-machine' ); ?>:</label>
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'message' ) ); ?>" type="text" value="<?php echo esc_attr( $message ); ?>">
 		</p>
 
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'posts' ) ); ?>"><?php esc_html_e( 'Number of posts', 'time-machine' ); ?>:</label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'posts' ) ); ?>"><?php esc_html_e( 'Number of articles', 'time-machine' ); ?>:</label>
 			<input class="small-text" id="<?php echo esc_attr( $this->get_field_id( 'posts' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'posts' ) ); ?>" type="number" value="<?php echo esc_attr( $posts ); ?>">
 		</p>
 
@@ -137,7 +137,7 @@ class Widget extends \WP_Widget {
 
 			<label for="<?php echo esc_attr( $this->get_field_id( 'exclude_pages' ) ); ?>">
 			<input class="checkbox" <?php checked( $exclude_pages, true, true ); ?> id="<?php echo esc_attr( $this->get_field_id( 'exclude_pages' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'exclude_pages' ) ); ?>" type="checkbox" value="1">
-			<?php esc_html_e( 'Exclude pages from listing', 'time-machine' ); ?></label><br />
+			<?php esc_html_e( 'Exclude pages', 'time-machine' ); ?></label><br />
 
 			<label for="<?php echo esc_attr( $this->get_field_id( 'exclude_current' ) ); ?>">
 			<input class="checkbox" <?php checked( $exclude_current, true, true ); ?> id="<?php echo esc_attr( $this->get_field_id( 'exclude_current' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'exclude_current' ) ); ?>" type="checkbox" value="1">
@@ -178,14 +178,14 @@ class Widget extends \WP_Widget {
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'excerpt' ) ); ?>">
 			<input class="checkbox" <?php checked( $excerpt, true, true ); ?> id="<?php echo esc_attr( $this->get_field_id( 'excerpt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excerpt' ) ); ?>" type="checkbox" value="1">
-			<?php esc_html_e( 'Show article excerpt?', 'time-machine' ); ?></label>
+			<?php esc_html_e( 'Show excerpt', 'time-machine' ); ?></label>
 		</p>
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'excerpt_cut' ) ); ?>">
 			<input class="checkbox" <?php checked( $excerpt_cut, true, true ); ?> id="<?php echo esc_attr( $this->get_field_id( 'excerpt_cut' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excerpt_cut' ) ); ?>" type="checkbox" value="1">
-			<?php esc_html_e( 'Shorten article excerpt', 'time-machine' ); ?></label><br />
-			<label for="<?php echo esc_attr( $this->get_field_id( 'excerpt_length' ) ); ?>"><?php esc_html_e( 'Excerpt length (characters)', 'time-machine' ); ?>:</label>
-			<input class="small-text" id="<?php echo esc_attr( $this->get_field_id( 'excerpt_length' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excerpt_length' ) ); ?>" type="number" value="<?php echo esc_attr( $excerpt_length ); ?>">
+			<?php esc_html_e( 'Shorten excerpt', 'time-machine' ); ?></label><br />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'excerpt_length' ) ); ?>"><?php esc_html_e( 'Excerpt length (words)', 'time-machine' ); ?>:</label>
+			<input class="small-text" id="<?php echo esc_attr( $this->get_field_id( 'excerpt_length' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excerpt_length' ) ); ?>" type="number" min="1" value="<?php echo esc_attr( $excerpt_length ); ?>">
 		</p>
 
 		<?php

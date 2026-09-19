@@ -55,13 +55,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { title: value } ) }
 					/>
 					<TextControl
-						label={ __( 'Message when no articles in past', 'time-machine' ) }
+						label={ __( 'Message if no articles in past', 'time-machine' ) }
 						value={ message }
 						placeholder={ __( 'No articles published on same day in past', 'time-machine' ) }
 						onChange={ ( value ) => setAttributes( { message: value } ) }
 					/>
 					<RangeControl
-						label={ __( 'Number of posts', 'time-machine' ) }
+						label={ __( 'Number of articles', 'time-machine' ) }
 						value={ posts }
 						onChange={ ( value ) => setAttributes( { posts: value } ) }
 						min={ 1 }
@@ -78,7 +78,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { private: value } ) }
 					/>
 					<ToggleControl
-						label={ __( 'Exclude pages from listing', 'time-machine' ) }
+						label={ __( 'Exclude pages', 'time-machine' ) }
 						checked={ excludePages }
 						onChange={ ( value ) => setAttributes( { excludePages: value } ) }
 					/>
@@ -129,22 +129,22 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<PanelBody title={ __( 'Article excerpt', 'time-machine' ) } initialOpen={ false }>
 					<ToggleControl
-						label={ __( 'Show article excerpt', 'time-machine' ) }
+						label={ __( 'Show excerpt', 'time-machine' ) }
 						checked={ excerpt }
 						onChange={ ( value ) => setAttributes( { excerpt: value } ) }
 					/>
 					<ToggleControl
-						label={ __( 'Shorten article excerpt', 'time-machine' ) }
+						label={ __( 'Shorten excerpt', 'time-machine' ) }
 						checked={ excerptCut }
 						onChange={ ( value ) => setAttributes( { excerptCut: value } ) }
 						disabled={ ! excerpt }
 					/>
 					<RangeControl
-						label={ __( 'Excerpt length (characters)', 'time-machine' ) }
+						label={ __( 'Excerpt length (words)', 'time-machine' ) }
 						value={ excerptLength }
 						onChange={ ( value ) => setAttributes( { excerptLength: value } ) }
-						min={ 10 }
-						max={ 1000 }
+						min={ 5 }
+						max={ 100 }
 						disabled={ ! excerpt || ! excerptCut }
 					/>
 				</PanelBody>
