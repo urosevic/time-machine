@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: archive, history, on this day, widget, block
 Requires at least: 5.3
 Tested up to: 7.1
-Stable tag: 26.8.0
+Stable tag: 26.9.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,11 +17,12 @@ Time Machine is a simple plugin that grab `N` published articles from database (
 User can set widget title, number of displayed articles and message shown when there is no public articles in past.
 
 = Features =
+* provides shortcode, legacy widget, FSE widget and Gutenberg block
 * list only published articles (ignore Draft's)
-* it's safe and will not list password protected articles until you strictly enable this option in widget settings
+* it's safe and will not list password protected articles until you strictly enable this option in shortcode/widget/block settings
 * option to exclude pages
 * option to exclude articles published in current year
-* option to hide widget if there is no articles in past (don't even displays `no articles` message)
+* option to hide widget/block if there is no articles in past (don't even displays `no articles` message)
 * configurable widget title, number of displayed articles, message when there is no articles, and optional display comments number
 * use theme based CSS Stylesheet
 
@@ -48,16 +49,78 @@ I like effect that produce Time Machine - traveling trough time. This plugin doe
 
 = How I can help? =
 
-Post suggestions, injoy in WordPress forum and donate.
+Revire and rate plugin, submit suggestions, contribute on WordPress forum.
+
+= Does Time Machine work with full page cache plugins (WP Rocket, WP Fastest Cache, W3 Total Cache...)? =
+
+Yes. Time Machine's list is refetched from a small REST endpoint right after the page finishes loading, so the visible content stays current even when the whole page has been cached for longer than a day. The cached markup already on the page stays visible until (and unless) that request succeeds, so nothing is ever blank while it refreshes, and the page cache itself is never touched or purged. If you prefer to disable this and rely only on the page cache's own expiry, add `define( 'TIME_MACHINE_DISABLE_REFRESH', true );` to `wp-config.php`.
+
+= How do I turn the front end auto-refresh off? =
+
+Add this to `wp-config.php`:
+
+`define( 'TIME_MACHINE_DISABLE_REFRESH', true );`
+
+No `data-time-machine-*` attributes are printed after that, the refresh script is never enqueued, and no REST request is ever made. Lists render once, on the server. On a page held in a full page cache for longer than a day, the list can then be a day or more behind.
+
+= The browser console shows a 401 on `/wp-json/time-machine/v1/list`. What is wrong? =
+
+A security plugin or snippet on your site closes the whole REST API to signed out visitors, through the `rest_authentication_errors` filter. That filter runs before any route can state that it is public, so Time Machine cannot exempt its own route from it, however read only that route is.
+
+Nothing is broken for your visitors. The list is rendered on the server and stays on screen; only the refresh described above is skipped, and the failed request is logged in the console. Time Machine checks this once a day and tells you in `Tools` -> `Site Health`, which spells out the two options below.
+
+**Option 1: switch the refresh off.** Add this to `wp-config.php`:
+
+`define( 'TIME_MACHINE_DISABLE_REFRESH', true );`
+
+No request is made after that, so the console stays clean. Lists render once, on the server, exactly as they did before this feature existed. On a page held in a full page cache for longer than a day, the list can then be a day or more behind.
+
+**Option 2: let this one route through.** It is read only and returns the same published titles, excerpts and links the page already shows to the same visitor, so letting it through gives nothing away. Add this to a must-use plugin or to your theme's `functions.php`:
+
+```
+add_filter(
+	'rest_authentication_errors',
+	function ( $result ) {
+
+		if ( ! is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$route = isset( $GLOBALS['wp']->query_vars['rest_route'] )
+			? ltrim( $GLOBALS['wp']->query_vars['rest_route'], '/' )
+			: '';
+
+		if ( 0 === strpos( $route, 'time-machine/v1/' ) ) {
+			return null;
+		}
+
+		return $result;
+	},
+	99
+);
+```
+
+It runs after the restriction and before the core cookie check, and clears the error for the `time-machine/v1` namespace only. Every other route keeps the restriction exactly as it is.
 
 == Changelog ==
 
-= 26.8.0 (2026-08-16) =
+= 26.9.0 (2026-09-19) =
+* Test: WordPress 7.1
 * Refactor: Full plugin refactored
-* Add: Support for Block Editor
-* Change: Removes `hours` offset
+* Add: Support for Block Editor (FSE Widget and Gutenberg Block)
+* Add: Excerpt is now generated from post content when no manual excerpt is set, same fallback WordPress core uses for `the_excerpt()`
+* Add: Password protected posts with no manual excerpt show a notice instead of a generated excerpt, until the current visitor unlocks that post
+* Add: Front-end auto-refresh of the post list via a REST endpoint, so pages served from a full page cache plugin still show current content
+* Add: Daily check of whether a site wide REST API restriction blocks the front-end refresh route, reported in a dismissible admin notice and in a Site Health test, with the snippet needed to allow that one read only route
+* Add: `TIME_MACHINE_DISABLE_REFRESH` constant to switch the front-end refresh off site wide from `wp-config.php`
+* Change: Remove `hours` offset
 * Change: Rename rangetype -> direction and rangenum -> offset
-* Test: WordPress 7.1-RC3
+* Change: Remove Excerpt before/after HTML tags and wrap excerpt into span with class excerpt
+* Change: Offset query results are now sorted newest year first
+* Improve: Offset query now compares whole days instead of the exact time, and results are cached (object cache, or transient when no persistent object cache is active)
+* Improve: Offset query loop now starts from the oldest published post's year (cached for a month) instead of a hardcoded 2002
+* Improve: Cache is invalidated automatically whenever a post or page is saved, instead of only relying on the daily/monthly expiration
+* Improve: Front-end script is enqueued minified, and served as readable source only while `SCRIPT_DEBUG` is on
 
 = 0.4.1 (2014-12-20) =
 * Improve: multi instance widget
@@ -111,5 +174,4 @@ Post suggestions, injoy in WordPress forum and donate.
 * Initial release
 
 == Screenshots ==
-1. Time Machine Widget Options
-2. Time Machine widget in action
+1. Time Machine Widget Options anr Preview
