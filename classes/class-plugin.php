@@ -158,6 +158,33 @@ class Plugin {
 	}
 
 	/**
+	 * Parse a loosely typed value (as received from a form field, a
+	 * shortcode attribute, or a REST query arg) into a boolean.
+	 *
+	 * Accepts 1/0, true/false, yes/no, on/off (case-insensitive), matching
+	 * the common conventions used across WordPress shortcode attributes.
+	 *
+	 * @param mixed $value Raw value.
+	 *
+	 * @return bool
+	 */
+	public static function string_to_bool( $value ) {
+		return in_array( strtolower( trim( (string) $value ) ), array( '1', 'true', 'yes', 'on' ), true );
+	}
+
+	/**
+	 * Convert a boolean into the '1'/'0' string form used as a default by
+	 * shortcode_atts() (which only ever works with strings).
+	 *
+	 * @param bool $value Value to convert.
+	 *
+	 * @return string
+	 */
+	public static function bool_to_string( $value ) {
+		return $value ? '1' : '0';
+	}
+
+	/**
 	 * Get default widget settings, merged with the legacy `time_machine` option.
 	 *
 	 * @return array
@@ -166,7 +193,7 @@ class Plugin {
 
 		$defaults = array(
 			'title'              => __( 'Time Machine', 'time-machine' ),
-			'message'            => __( 'No articles published on same day in past', 'time-machine' ),
+			'message'            => __( 'No articles were published on this day in previous years.', 'time-machine' ),
 			'posts'              => 10,
 			'showifno'           => false,
 			'private'            => false,
@@ -178,7 +205,7 @@ class Plugin {
 			'direction'          => 'both',
 			'excerpt'            => false,
 			'excerpt_cut'        => false,
-			'excerpt_length'     => 150,
+			'excerpt_length'     => 25,
 		);
 
 		$options = wp_parse_args( get_option( 'time_machine' ), $defaults );

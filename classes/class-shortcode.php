@@ -52,16 +52,16 @@ class Shortcode {
 				'title'              => $defaults['title'],
 				'message'            => $defaults['message'],
 				'posts'              => $defaults['posts'],
-				'showifno'           => self::bool_to_string( $defaults['showifno'] ),
-				'private'            => self::bool_to_string( $defaults['private'] ),
-				'exclude_pages'      => self::bool_to_string( $defaults['exclude_pages'] ),
-				'exclude_current'    => self::bool_to_string( $defaults['exclude_current'] ),
-				'display_commentnum' => self::bool_to_string( $defaults['display_commentnum'] ),
+				'showifno'           => Plugin::bool_to_string( $defaults['showifno'] ),
+				'private'            => Plugin::bool_to_string( $defaults['private'] ),
+				'exclude_pages'      => Plugin::bool_to_string( $defaults['exclude_pages'] ),
+				'exclude_current'    => Plugin::bool_to_string( $defaults['exclude_current'] ),
+				'display_commentnum' => Plugin::bool_to_string( $defaults['display_commentnum'] ),
 				'range'              => $defaults['range'],
 				'offset'             => $defaults['offset'],
 				'direction'          => $defaults['direction'],
-				'excerpt'            => self::bool_to_string( $defaults['excerpt'] ),
-				'excerpt_cut'        => self::bool_to_string( $defaults['excerpt_cut'] ),
+				'excerpt'            => Plugin::bool_to_string( $defaults['excerpt'] ),
+				'excerpt_cut'        => Plugin::bool_to_string( $defaults['excerpt_cut'] ),
 				'excerpt_length'     => $defaults['excerpt_length'],
 			),
 			$atts,
@@ -72,16 +72,16 @@ class Shortcode {
 			'title'              => sanitize_text_field( $atts['title'] ),
 			'message'            => sanitize_text_field( $atts['message'] ),
 			'posts'              => absint( $atts['posts'] ),
-			'showifno'           => self::string_to_bool( $atts['showifno'] ),
-			'private'            => self::string_to_bool( $atts['private'] ),
-			'exclude_pages'      => self::string_to_bool( $atts['exclude_pages'] ),
-			'exclude_current'    => self::string_to_bool( $atts['exclude_current'] ),
-			'display_commentnum' => self::string_to_bool( $atts['display_commentnum'] ),
+			'showifno'           => Plugin::string_to_bool( $atts['showifno'] ),
+			'private'            => Plugin::string_to_bool( $atts['private'] ),
+			'exclude_pages'      => Plugin::string_to_bool( $atts['exclude_pages'] ),
+			'exclude_current'    => Plugin::string_to_bool( $atts['exclude_current'] ),
+			'display_commentnum' => Plugin::string_to_bool( $atts['display_commentnum'] ),
 			'range'              => in_array( $atts['range'], Plugin::ALLOWED_RANGES, true ) ? $atts['range'] : $defaults['range'],
 			'offset'             => absint( $atts['offset'] ),
 			'direction'          => in_array( $atts['direction'], Plugin::ALLOWED_DIRECTIONS, true ) ? $atts['direction'] : $defaults['direction'],
-			'excerpt'            => self::string_to_bool( $atts['excerpt'] ),
-			'excerpt_cut'        => self::string_to_bool( $atts['excerpt_cut'] ),
+			'excerpt'            => Plugin::string_to_bool( $atts['excerpt'] ),
+			'excerpt_cut'        => Plugin::string_to_bool( $atts['excerpt_cut'] ),
 			'excerpt_length'     => absint( $atts['excerpt_length'] ),
 		);
 
@@ -110,30 +110,5 @@ class Shortcode {
 		$html .= '</div>';
 
 		return $html;
-	}
-
-	/**
-	 * Convert a boolean default into the string form used by shortcode_atts().
-	 *
-	 * @param bool $value Default value.
-	 *
-	 * @return string
-	 */
-	private static function bool_to_string( $value ) {
-		return $value ? '1' : '0';
-	}
-
-	/**
-	 * Parse a shortcode attribute string into a boolean.
-	 *
-	 * Accepts 1/0, true/false, yes/no, on/off (case-insensitive), matching
-	 * the common conventions used across WordPress shortcode attributes.
-	 *
-	 * @param string $value Raw attribute value.
-	 *
-	 * @return bool
-	 */
-	private static function string_to_bool( $value ) {
-		return in_array( strtolower( trim( (string) $value ) ), array( '1', 'true', 'yes', 'on' ), true );
 	}
 }
