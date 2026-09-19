@@ -11,7 +11,7 @@
 		"prestart": "node -e \"require('fs').mkdirSync('blocks/time-machine/build',{recursive:true});require('fs').copyFileSync('blocks/time-machine/src/block.json','blocks/time-machine/build/block.json')\"",
 		"lint:js": "wp-scripts lint-js",
 		"lint:css": "wp-scripts lint-style",
-		"build:css": "sass assets/scss/time-machine.scss:assets/css/time-machine.css --style=expanded --no-source-map",
+		"build:css": "sass assets/scss/time-machine.scss:assets/css/time-machine.css --style=compressed --no-source-map",
 		"watch:css": "sass --watch assets/scss/time-machine.scss:assets/css/time-machine.css --no-source-map"
 	},
 	"devDependencies": {
