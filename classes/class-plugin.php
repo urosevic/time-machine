@@ -167,6 +167,22 @@ class Plugin {
 	}
 
 	/**
+	 * Filename suffix for the front end assets that ship in both a readable
+	 * and a minified form.
+	 *
+	 * Keyed to SCRIPT_DEBUG rather than WP_DEBUG: SCRIPT_DEBUG is the
+	 * constant core itself checks to decide between its own development and
+	 * production bundles, so a site that turns it on gets readable files
+	 * from WordPress and from this plugin alike, without either of them
+	 * having to invent its own switch.
+	 *
+	 * @return string Empty string while SCRIPT_DEBUG is on, '.min' otherwise.
+	 */
+	public static function asset_suffix() {
+		return ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+	}
+
+	/**
 	 * Parse a loosely typed value (as received from a form field, a
 	 * shortcode attribute, or a REST query arg) into a boolean.
 	 *

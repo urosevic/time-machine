@@ -19,6 +19,34 @@ defined( 'ABSPATH' ) || exit;
 class Content_Generator {
 
 	/**
+	 * How long a cached query result is kept, in seconds.
+	 *
+	 * Note what this does and does not do. Freshness is not its job:
+	 * the cache key carries the current date, so the entry a new day looks
+	 * for is a different one, and Cache::flush() bumps a version prefix on
+	 * every post or page save, which orphans every entry at once. By the
+	 * time this lifetime matters the entry is already unreachable - all it
+	 * decides is how long that orphan sits in storage before it expires on
+	 * its own. A day, to match the shortest interval at which entries go
+	 * stale in the first place.
+	 *
+	 * @var int
+	 */
+	const CACHE_TTL = DAY_IN_SECONDS;
+
+	/**
+	 * How long the oldest published post's year is kept, in seconds.
+	 *
+	 * Garbage collection again, for the same reason: the entry is orphaned
+	 * by Cache::flush() the moment anyone saves a post or page, which is
+	 * also the only way the answer can change through WordPress. Kept far
+	 * longer than CACHE_TTL because nothing else ever invalidates it.
+	 *
+	 * @var int
+	 */
+	const OLDEST_YEAR_CACHE_TTL = MONTH_IN_SECONDS;
+
+	/**
 	 * Normalized settings for this instance of the generator.
 	 *
 	 * @var array
@@ -50,17 +78,15 @@ class Content_Generator {
 	/**
 	 * Run the query and return the matching posts.
 	 *
-	 * Named get_articles() rather than get_posts() to avoid confusion with
-	 * WordPress core's get_posts(), which this does not wrap or call.
+	 * The query is built and prepared in this single method so that
+	 * phpcs/Plugin Check can statically verify that every dynamic value
+	 * reaches the database through $wpdb->prepare().
 	 *
-	 * The query is built and prepared in this single method (rather than split
-	 * across helper methods) so that phpcs/Plugin Check can statically verify
-	 * that every dynamic value reaches the database through $wpdb->prepare().
-	 *
-	 * Results are cached for the rest of the day, since the query only ever
-	 * changes once the calendar day rolls over (see Cache::key()), and
-	 * invalidated early whenever a post or page is saved (see
-	 * Cache::maybe_flush()).
+	 * Results are cached under a key carrying the current UTC date, so a
+	 * new day simply looks for an entry that does not exist yet rather than
+	 * waiting for anything to expire, and Cache::maybe_flush() orphans
+	 * every entry at once whenever a post or page is saved. CACHE_TTL only
+	 * decides how long the orphan lingers in storage after that.
 	 *
 	 * @return array Array of result objects (ID, post_title, post_date_gmt, post_excerpt, post_content, post_password, comment_count).
 	 */
@@ -160,7 +186,7 @@ class Content_Generator {
 			// No prior year to compare against (e.g. a brand new site, or one whose
 			// oldest post is this year) - nothing can match, skip the query entirely.
 			if ( empty( $range_clauses ) ) {
-				Cache::set( $cache_key, array(), (int) apply_filters( 'time_machine_cache_ttl', DAY_IN_SECONDS ) );
+				Cache::set( $cache_key, array(), self::CACHE_TTL );
 				return array();
 			}
 
@@ -194,7 +220,7 @@ class Content_Generator {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$posts = (array) $wpdb->get_results( $sql, OBJECT );
 
-		Cache::set( $cache_key, $posts, (int) apply_filters( 'time_machine_cache_ttl', DAY_IN_SECONDS ) );
+		Cache::set( $cache_key, $posts, self::CACHE_TTL );
 
 		return $posts;
 	}
@@ -206,7 +232,9 @@ class Content_Generator {
 	 * Looking this up is one indexed-ish query, but there is no reason to run
 	 * it on every request, so the result is cached separately from (and for
 	 * much longer than) the article listing itself - it only changes if
-	 * someone backdates a post before the current oldest one.
+	 * someone backdates or imports a post older than the current oldest,
+	 * and that goes through save_post, which flushes this along with
+	 * everything else.
 	 *
 	 * @return int
 	 */
@@ -233,14 +261,7 @@ class Content_Generator {
 			? (int) substr( $oldest_date, 0, 4 )
 			: (int) ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) ) )->format( 'Y' );
 
-		/**
-		 * Filters how long the oldest published post's year is cached for.
-		 *
-		 * @param int $ttl Cache lifetime in seconds. Default MONTH_IN_SECONDS.
-		 */
-		$ttl = (int) apply_filters( 'time_machine_oldest_year_cache_ttl', MONTH_IN_SECONDS );
-
-		Cache::set( $cache_key, $oldest_year, $ttl );
+		Cache::set( $cache_key, $oldest_year, self::OLDEST_YEAR_CACHE_TTL );
 
 		return $oldest_year;
 	}
@@ -259,23 +280,23 @@ class Content_Generator {
 
 		if ( 'none' === $this->args['range'] ) {
 			return array(
-				'prefix' => '<span title="' . esc_attr__( "Articles published on today's day in past years", 'time-machine' ) . '">',
+				'prefix' => '<span title="' . esc_html__( "Articles published on today's day in past years", 'time-machine' ) . '">',
 				'suffix' => '</span>',
 			);
 		}
 
 		$prefix  = '<span title="';
-		$prefix .= esc_attr__( 'Articles published', 'time-machine' ) . ' ' . $this->args['offset'] . ' ';
+		$prefix .= esc_html__( 'Articles published', 'time-machine' ) . ' ' . $this->args['offset'] . ' ';
 
 		switch ( $this->args['range'] ) {
 			case 'days':
-				$prefix .= esc_attr__( 'days', 'time-machine' );
+				$prefix .= esc_html__( 'days', 'time-machine' );
 				break;
 			case 'weeks':
-				$prefix .= esc_attr__( 'weeks', 'time-machine' );
+				$prefix .= esc_html__( 'weeks', 'time-machine' );
 				break;
 			case 'months':
-				$prefix .= esc_attr__( 'months', 'time-machine' );
+				$prefix .= esc_html__( 'months', 'time-machine' );
 				break;
 		}
 
@@ -283,17 +304,17 @@ class Content_Generator {
 
 		switch ( $this->args['direction'] ) {
 			case 'before':
-				$prefix .= esc_attr__( 'before', 'time-machine' );
+				$prefix .= esc_html__( 'before', 'time-machine' );
 				break;
 			case 'after':
-				$prefix .= esc_attr__( 'after', 'time-machine' );
+				$prefix .= esc_html__( 'after', 'time-machine' );
 				break;
 			default:
-				$prefix .= esc_attr__( 'before and after', 'time-machine' );
+				$prefix .= esc_html__( 'before and after', 'time-machine' );
 				break;
 		}
 
-		$prefix .= ' ' . esc_attr__( "today's day in past years", 'time-machine' ) . '">';
+		$prefix .= ' ' . esc_html__( "today's day in past years", 'time-machine' ) . '">';
 
 		return array(
 			'prefix' => $prefix,

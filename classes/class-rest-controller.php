@@ -107,15 +107,35 @@ class Rest_Controller {
 
 		$response = rest_ensure_response( array( 'html' => $generator->get_list_html() ) );
 
-		// The underlying query is already cached for the rest of the day
-		// (see Content_Generator::get_articles()), so browsers and any
-		// intermediary cache can safely reuse this exact response for as
-		// long as that cache stays valid.
-		$response->header(
-			'Cache-Control',
-			'public, max-age=' . (int) apply_filters( 'time_machine_cache_ttl', DAY_IN_SECONDS )
-		);
+		// This response is publicly cacheable, but only until the list it
+		// carries changes, which is the moment the UTC date rolls over.
+		$response->header( 'Cache-Control', 'public, max-age=' . self::get_max_age() );
 
 		return $response;
+	}
+
+	/**
+	 * Seconds left until the response stops being accurate.
+	 *
+	 * The list is keyed to the current UTC date (see
+	 * Content_Generator::get_articles()) and cannot change until that date
+	 * does, so the browser and CDN copy should expire exactly then. A flat
+	 * day would not: a visitor whose browser stored the response at 23:00
+	 * would keep being handed yesterday's list for the next 24 hours -
+	 * precisely the staleness the front end refresh exists to undo, caused
+	 * by the refresh itself.
+	 *
+	 * A post saved during the day still cannot be pushed out of a cache
+	 * this server does not control. Bounding the response at midnight does
+	 * not fix that, it just stops it from lasting a full day beyond it.
+	 *
+	 * @return int
+	 */
+	private static function get_max_age() {
+
+		$now      = new \DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
+		$midnight = $now->setTime( 0, 0, 0 )->modify( '+1 day' );
+
+		return max( 0, $midnight->getTimestamp() - $now->getTimestamp() );
 	}
 }

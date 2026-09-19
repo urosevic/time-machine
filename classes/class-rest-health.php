@@ -119,6 +119,19 @@ class Rest_Health {
 	 */
 	public static function maybe_schedule() {
 
+		// Nothing to probe when no request is ever going to be made. The
+		// wp_next_scheduled() guard keeps this to a read of the already
+		// autoloaded cron option on every front end request, and only
+		// clears a schedule left over from before the constant was set.
+		if ( Refresh::is_disabled() ) {
+
+			if ( wp_next_scheduled( self::CRON_HOOK ) ) {
+				self::unschedule();
+			}
+
+			return;
+		}
+
 		if ( wp_next_scheduled( self::CRON_HOOK ) ) {
 			return;
 		}
@@ -145,6 +158,10 @@ class Rest_Health {
 	 * @return void
 	 */
 	public static function maybe_run_first_check() {
+
+		if ( Refresh::is_disabled() ) {
+			return;
+		}
 
 		if ( wp_doing_ajax() || wp_doing_cron() ) {
 			return;
@@ -196,9 +213,16 @@ class Rest_Health {
 	 *               healthy sites cannot make loopback requests at all, so
 	 *               this outcome stays silent on purpose.
 	 *
+	 * A fourth, `disabled`, is recorded without probing anything when the
+	 * refresh is switched off in wp-config.php (see Refresh::is_disabled()).
+	 *
 	 * @return array Stored result.
 	 */
 	public static function run_check() {
+
+		if ( Refresh::is_disabled() ) {
+			return self::store( 'disabled', 0, '', '' );
+		}
 
 		$response = wp_remote_get(
 			add_query_arg(
@@ -322,6 +346,10 @@ class Rest_Health {
 	 */
 	private static function should_render_notice() {
 
+		if ( Refresh::is_disabled() ) {
+			return false;
+		}
+
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return false;
 		}
@@ -380,8 +408,9 @@ class Rest_Health {
 			<p>
 				<?php
 				printf(
-					/* translators: 1: opening link tag to the Site Health screen, 2: closing link tag. */
-					esc_html__( 'Either allow this one read only route through the restriction, or switch the front end refresh off. %1$sSite Health%2$s has both, with the code to copy.', 'time-machine' ),
+					/* translators: 1: PHP constant name, 2: opening link tag to the Site Health screen, 3: closing link tag. */
+					esc_html__( 'Two ways out: switch the refresh off with %1$s in wp-config.php, or let this one read only route through the restriction. %2$sSite Health%3$s spells out both, with the code to copy.', 'time-machine' ),
+					'<code>' . esc_html( Refresh::DISABLE_CONSTANT ) . '</code>',
 					'<a href="' . esc_url( admin_url( 'site-health.php' ) ) . '">',
 					'</a>'
 				);
@@ -442,8 +471,6 @@ class Rest_Health {
 	 */
 	public static function site_health_test() {
 
-		$result = self::get_result( true );
-
 		$test = array(
 			'label'       => __( 'The Time Machine refresh route is reachable', 'time-machine' ),
 			'status'      => 'good',
@@ -451,16 +478,39 @@ class Rest_Health {
 				'label' => __( 'Time Machine', 'time-machine' ),
 				'color' => 'blue',
 			),
-			'description' => '<p>' . esc_html__( 'Time Machine re-fetches its list after the page has loaded, so a cached page still shows the right day. The route it uses answered as expected.', 'time-machine' ) . '</p>',
+			'description' => '<p>' . esc_html__( 'Time Machine re-fetches its list after the page has loaded, so a page served from a full page cache still shows the right day. The route it uses answered as expected.', 'time-machine' ) . '</p>',
 			'actions'     => '',
 			'test'        => 'time_machine_rest',
 		);
 
+		if ( Refresh::is_disabled() ) {
+
+			$test['label']       = __( 'The Time Machine front end refresh is switched off', 'time-machine' );
+			$test['description'] = '<p>' . sprintf(
+				/* translators: %s: PHP constant name. */
+				esc_html__( '%s is set in wp-config.php, so no refresh request is made at all. Lists render once, on the server. On a page held in a full page cache for longer than a day, that list can be a day or more behind.', 'time-machine' ),
+				'<code>' . esc_html( Refresh::DISABLE_CONSTANT ) . '</code>'
+			) . '</p>';
+
+			return $test;
+		}
+
+		$result = self::get_result( true );
+
 		if ( 'unknown' === $result['status'] ) {
 
-			$test['label']       = __( 'The Time Machine refresh route could not be checked', 'time-machine' );
-			$test['status']      = 'recommended';
-			$test['description'] = '<p>' . esc_html__( 'The check could not reach this site over a loopback request, which is common on hosts that block them. This says nothing about whether the route works for visitors; check the browser console on a page holding a Time Machine list if you want to be sure.', 'time-machine' ) . '</p>';
+			$test['label']  = __( 'The Time Machine refresh route could not be checked', 'time-machine' );
+			$test['status'] = 'recommended';
+
+			$description = '<p>' . esc_html__( 'The check could not reach this site over a loopback request, which is common on hosts that block them, and on local development domains. This says nothing either way about whether the route works for visitors.', 'time-machine' ) . '</p>';
+
+			$description .= '<p>' . sprintf(
+				/* translators: %s: REST route. */
+				esc_html__( 'To find out, open a page holding a Time Machine list and look at the browser console. A 401 on %s means the REST API here is closed to signed out visitors, and the two options below apply.', 'time-machine' ),
+				'<code>' . esc_html( Rest_Controller::REST_NAMESPACE . Rest_Controller::REST_ROUTE ) . '</code>'
+			) . '</p>';
+
+			$test['description'] = $description . self::get_options_html();
 
 			return $test;
 		}
@@ -474,27 +524,51 @@ class Rest_Health {
 
 		$description = '<p>' . sprintf(
 			/* translators: 1: REST route, 2: HTTP status code, 3: REST error code returned by the site. */
-			esc_html__( 'Something on this site closes the REST API to signed out visitors: the %1$s route answers with HTTP %2$d (%3$s). That filter runs before a route can state that it is public, so Time Machine cannot exempt itself.', 'time-machine' ),
+			esc_html__( 'Something on this site closes the REST API to signed out visitors: the %1$s route answers with HTTP %2$d (%3$s). That check runs before a route can state that it is public, so Time Machine cannot exempt itself.', 'time-machine' ),
 			'<code>' . esc_html( Rest_Controller::REST_NAMESPACE . Rest_Controller::REST_ROUTE ) . '</code>',
 			(int) $result['http_code'],
 			'<code>' . esc_html( $result['rest_code'] ) . '</code>'
 		) . '</p>';
 
-		$description .= '<p>' . esc_html__( 'Nothing is broken for visitors: the list is rendered on the server and stays on screen. The only cost is a failed request logged in the browser console on every page that shows a list.', 'time-machine' ) . '</p>';
+		$description .= '<p>' . esc_html__( 'Nothing is broken for visitors: the list is rendered on the server and stays on screen. The only cost is that failed request, logged in the browser console on every page that shows a list.', 'time-machine' ) . '</p>';
 
-		$description .= '<p>' . esc_html__( 'This route is read only and returns the same published titles, excerpts and links the page already shows, so it is safe to let through. Add this to a must-use plugin or to the theme functions.php:', 'time-machine' ) . '</p>';
-
-		$description .= '<pre><code>' . esc_html( self::get_allow_snippet() ) . '</code></pre>';
-
-		$description .= '<p>' . sprintf(
-			/* translators: %s: name of a PHP filter hook. */
-			esc_html__( 'If you would rather drop the refresh altogether, return false from the %s filter instead. The lists then render once, server side, exactly as they did before this feature existed.', 'time-machine' ),
-			'<code>time_machine_frontend_refresh</code>'
-		) . '</p>';
-
-		$test['description'] = $description;
+		$test['description'] = $description . self::get_options_html();
 
 		return $test;
+	}
+
+	/**
+	 * The two ways out of a REST API restriction, as offered in the Site
+	 * Health test.
+	 *
+	 * Deliberately two, and deliberately in this order. Switching the
+	 * refresh off is the smaller decision: it costs freshness on cached
+	 * pages and nothing else, and it leaves the site's REST policy exactly
+	 * as its owner set it. Opening the route keeps the refresh, and is a
+	 * change to that policy - a small and well understood one, but the
+	 * owner's call to make, not the plugin's.
+	 *
+	 * @return string
+	 */
+	private static function get_options_html() {
+
+		$html = '<p><strong>' . esc_html__( 'Option 1: switch the refresh off', 'time-machine' ) . '</strong></p>';
+
+		$html .= '<p>' . esc_html__( 'Add this to wp-config.php, above the line that says that is all, stop editing:', 'time-machine' ) . '</p>';
+
+		$html .= '<pre><code>' . esc_html( 'define( \'' . Refresh::DISABLE_CONSTANT . '\', true );' ) . '</code></pre>';
+
+		$html .= '<p>' . esc_html__( 'No request is made after that, so the console stays clean. Lists render once, on the server, exactly as they did before this feature existed. On a page held in a full page cache for longer than a day, the list can then be a day or more behind.', 'time-machine' ) . '</p>';
+
+		$html .= '<p><strong>' . esc_html__( 'Option 2: let this one route through', 'time-machine' ) . '</strong></p>';
+
+		$html .= '<p>' . esc_html__( 'The route is read only and returns the same published titles, excerpts and links the page already shows to the same visitor, so letting it through gives nothing away. Add this to a must-use plugin or to the theme functions.php:', 'time-machine' ) . '</p>';
+
+		$html .= '<pre><code>' . esc_html( self::get_allow_snippet() ) . '</code></pre>';
+
+		$html .= '<p>' . esc_html__( 'It runs after the restriction and before the core cookie check, and clears the error for the Time Machine namespace only. Every other route keeps the restriction as it is.', 'time-machine' ) . '</p>';
+
+		return $html;
 	}
 
 	/**

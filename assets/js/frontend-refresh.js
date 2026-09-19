@@ -4,8 +4,8 @@
  * Keeps the visible list current even when a full page cache plugin has
  * cached a page for longer than a day. Each `<ul class="time-machine-list">`
  * carrying `data-time-machine-*` attributes (added server side by
- * Content_Generator::get_refresh_attribute(), unless disabled through the
- * time_machine_frontend_refresh filter) is refetched from the REST endpoint
+ * Refresh::get_attribute(), unless the TIME_MACHINE_DISABLE_REFRESH
+ * constant is set in wp-config.php) is refetched from the REST endpoint
  * registered by Rest_Controller and swapped in.
  *
  * The cached markup already on the page is left untouched until (and

@@ -63,6 +63,17 @@ class Refresh {
 	);
 
 	/**
+	 * Constant a site owner can define in wp-config.php to switch the front
+	 * end refresh off for the whole site.
+	 *
+	 * Offered in Site Health as one of the two answers for a site whose
+	 * REST API is closed to signed out visitors (see Rest_Health).
+	 *
+	 * @var string
+	 */
+	const DISABLE_CONSTANT = 'TIME_MACHINE_DISABLE_REFRESH';
+
+	/**
 	 * Whether get_attribute() has added its attributes at least once during
 	 * the current request, checked by maybe_enqueue() to decide whether the
 	 * front-end refresh script is actually needed.
@@ -106,7 +117,7 @@ class Refresh {
 
 		wp_register_script(
 			'time-machine-frontend-refresh',
-			TIME_MACHINE_URL . 'assets/js/frontend-refresh.js',
+			TIME_MACHINE_URL . 'assets/js/frontend-refresh' . Plugin::asset_suffix() . '.js',
 			array(),
 			TIME_MACHINE_VERSION,
 			true
@@ -151,10 +162,9 @@ class Refresh {
 	 * caches the whole page, the rendered markup can stay stale for far
 	 * longer than that. The attributes carry the settings needed to
 	 * re-render just this list, one plain `data-time-machine-<setting>`
-	 * attribute per setting rather than a single JSON blob, so
-	 * assets/js/frontend-refresh.js can fetch a current copy from
-	 * Rest_Controller after the cached page has loaded and swap it in,
-	 * without touching the page cache itself.
+	 * attribute per setting, so assets/js/frontend-refresh.js can fetch
+	 * a current copy from Rest_Controller after the cached page has loaded
+	 * and swap it in, without touching the page cache itself.
 	 *
 	 * @param array $args Settings for the Time Machine instance being rendered.
 	 *
@@ -162,14 +172,7 @@ class Refresh {
 	 */
 	public static function get_attribute( array $args ) {
 
-		/**
-		 * Filters whether a Time Machine instance gets the front end
-		 * auto-refresh attributes (and, in turn, is refetched after load).
-		 *
-		 * @param bool  $enabled Whether to add the attributes. Default true.
-		 * @param array $args    Settings for this Time Machine instance.
-		 */
-		if ( ! apply_filters( 'time_machine_frontend_refresh', true, $args ) ) {
+		if ( self::is_disabled() ) {
 			return '';
 		}
 
@@ -191,6 +194,22 @@ class Refresh {
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Whether the front end refresh is switched off site wide through the
+	 * DISABLE_CONSTANT constant in wp-config.php.
+	 *
+	 * With it set, no instance gets its `data-time-machine-*` attributes,
+	 * the refresh script is never enqueued, and no REST request is ever
+	 * made. Lists then render once, server side, exactly as they did before
+	 * the refresh existed: on a page held in a full page cache for longer
+	 * than a day, that list can be a day or more behind.
+	 *
+	 * @return bool
+	 */
+	public static function is_disabled() {
+		return defined( self::DISABLE_CONSTANT ) && constant( self::DISABLE_CONSTANT );
 	}
 
 	/**
